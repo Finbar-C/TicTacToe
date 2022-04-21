@@ -1,4 +1,7 @@
 
+from NEA_Prac.Ui import Terminal
+
+
 class Game:
 
     def __init__(self):
@@ -15,4 +18,5 @@ class Game:
         pass
 
 if __name__ == "__main__":
-    pass
+    t = Terminal()
+    t.run
