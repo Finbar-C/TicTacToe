@@ -1,5 +1,4 @@
 
-from NEA_Prac.Ui import Terminal
 
 
 class Game:
