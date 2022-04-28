@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from Game import Game
+from Game import Game, GameError
 
 class Ui(ABC):
 
@@ -19,15 +19,29 @@ class Terminal(Ui):
         self.__game = Game()
     
     def __get_input(self):
-        row = int(input("enter row: "))
-        col = int(input("enter column: "))
+        while True:
+            try: #type
+                row = int(input("enter row: "))
+                col = int(input("enter column: "))
+                if 1 <= row <= 3 and 1 <= col <= 3: #range
+                    break
+                else:
+                    print("Invalid input, try again")
+            except ValueError:
+                print("Invalid input, try again")
         return row, col
 
     def run(self):
         while self.__game.winner == None:
             print(self.__game)
             row, col = self.__get_input()
-            self.__game.play(row,col)
+            try:
+                self.__game.play(row,col)
+            except GameError as e:
+                print(e)
         print(self.__game)
-        print(f"The winner is {self.__game.winner}")
+        if self.__game.winner == Game.DRAW:
+            print("Draw")
+        else:
+            print(f"The winner is {self.__game.winner}")
 

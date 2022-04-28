@@ -1,8 +1,11 @@
+from itertools import product
 
-
+class GameError(Exception):
+    pass
 
 class Game:
 
+    DRAW = ""
     EMPTY = " "
     p1 = "X"
     p2 = "O"
@@ -24,6 +27,8 @@ class Game:
     def play(self,row,col):
         row -= 1 # 0-basing
         col -= 1
+        if self.__board[row][col] != Game.EMPTY:
+            raise GameError("Cannot play here")
         self.__board[row][col] = self.__player
         if self.__player == Game.p1:
             self.__player = Game.p2
@@ -43,6 +48,8 @@ class Game:
                 return p
             if all(self.__board[2-i][i] == p for i in range(3)):
                 return p
+        if not any(self.__board[row][col] == Game.EMPTY for row,col, in product(range(3),range(3))):
+            return Game.DRAW
             
         return None
 
