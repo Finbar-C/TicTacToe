@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from Game import Game, GameError
 from tkinter import *
+from itertools import product
 
 class Ui(ABC):
 
@@ -15,7 +16,7 @@ class Gui(Ui):
         frame = Frame(root)
         frame.pack()
         Button(frame, text="Help", command=self.__show_help).pack(fill=X)
-        Button(frame, text="Play", command=self.__play).pack(fill=X)
+        Button(frame, text="Play", command=self.__play_game).pack(fill=X)
         Button(frame, text="Quit", command=self.__quit).pack(fill=X)
 
         self.__root = root
@@ -23,14 +24,33 @@ class Gui(Ui):
     def __show_help(self):
         pass
 
-    def __play(self):
-        pass
+    def __play_game(self):
+        self.__game = Game()
+        game_win = Toplevel(self.__root)
+        game_win.title("GAME TIME SMIFF")
+        frame = Frame(game_win)
+        frame.grid(row=0,column=0)
+
+        self.__buttons = [[None for _ in range(3)] for _ in range(3)]
+        for row,col in product(range(3), range(3)):
+            b = StringVar()
+            b.set(self.__game.at(row+1,col+1))
+            self.__buttons[row][col] = b
+            cmd = lambda r=row, c=col: self.__play(r,c)
+
+            Button(frame, textvariable=b, command=cmd).grid(row=row,column=col)
+
+        Button(game_win, text="Dismiss", command=game_win.destroy).grid(row=1,column=0)
 
     def __quit(self):
         self.__root.quit()
 
     def run(self):
         self.__root.mainloop()
+    
+    def __play(self,r,c):
+        self.__game.play(r+1,c+1)
+        self.__buttons[r][c].set(self.__game.at(r+1,c+1))
 
 class Terminal(Ui):
     def __init__(self):

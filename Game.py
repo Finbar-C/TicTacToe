@@ -53,6 +53,10 @@ class Game:
             
         return None
 
+    def at(self,row,col):
+        row -= 1
+        col -= 1
+        return self.__board[row][col]
 
 if __name__ == "__main__":
     pass
