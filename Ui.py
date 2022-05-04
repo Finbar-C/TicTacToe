@@ -19,6 +19,14 @@ class Gui(Ui):
         Button(frame, text="Play", command=self.__play_game).pack(fill=X)
         Button(frame, text="Quit", command=self.__quit).pack(fill=X)
 
+        scroll = Scrollbar(frame)
+        console = Text(frame, height=4, width=50)
+        scroll.pack(side=RIGHT, fill=Y)
+        console.pack(side=LEFT, fill=Y)
+
+        scroll.config(command=console.yview)
+        console.config(yscrollcommand=scroll.set)
+
         self.__root = root
 
     def __show_help(self):
@@ -31,6 +39,10 @@ class Gui(Ui):
         frame = Frame(game_win)
         frame.grid(row=0,column=0)
 
+        Grid.columnconfigure(game_win, 0, weight=1)
+        Grid.rowconfigure(game_win, 0, weight=1)
+        frame.grid(row=0, column=0, sticky=N + S + E + W)
+
         self.__buttons = [[None for _ in range(3)] for _ in range(3)]
         for row,col in product(range(3), range(3)):
             b = StringVar()
@@ -38,7 +50,11 @@ class Gui(Ui):
             self.__buttons[row][col] = b
             cmd = lambda r=row, c=col: self.__play(r,c)
 
-            Button(frame, textvariable=b, command=cmd).grid(row=row,column=col)
+            Button(frame, textvariable=b, command=cmd).grid(row=row,column=col,sticky=N+S+E+W)
+        
+        for i in range(3):
+            Grid.rowconfigure(frame, i, weight=1)
+            Grid.columnconfigure(frame, i, weight=1)
 
         Button(game_win, text="Dismiss", command=game_win.destroy).grid(row=1,column=0)
 
