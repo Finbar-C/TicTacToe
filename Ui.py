@@ -11,6 +11,7 @@ class Ui(ABC):
 
 class Gui(Ui):
     def __init__(self):
+        self.__game_win = None
         root = Tk()
         root.title("Tic Tac Toe")
         frame = Frame(root)
@@ -28,11 +29,16 @@ class Gui(Ui):
         console.config(yscrollcommand=scroll.set)
 
         self.__root = root
+        self.__console = console
+
 
     def __show_help(self):
         pass
 
     def __play_game(self):
+        if self.__game_win:
+            return
+        self.__finished = False
         self.__game = Game()
         game_win = Toplevel(self.__root)
         game_win.title("GAME TIME SMIFF")
@@ -56,7 +62,12 @@ class Gui(Ui):
             Grid.rowconfigure(frame, i, weight=1)
             Grid.columnconfigure(frame, i, weight=1)
 
-        Button(game_win, text="Dismiss", command=game_win.destroy).grid(row=1,column=0)
+        Button(game_win, text="Dismiss", command=self.__dismiss_game_win).grid(row=1,column=0)
+        self.__game_win = game_win
+
+    def __dismiss_game_win(self):
+        self.__game_win.destroy()
+        self.__game_win = None
 
     def __quit(self):
         self.__root.quit()
@@ -65,8 +76,21 @@ class Gui(Ui):
         self.__root.mainloop()
     
     def __play(self,r,c):
-        self.__game.play(r+1,c+1)
+        if self.__finished:
+            return
+        try:
+            self.__game.play(r+1,c+1)
+        except GameError as e:
+            self.__console.insert(END, f"{e}\n")
+        
         self.__buttons[r][c].set(self.__game.at(r+1,c+1))
+
+        if self.__game.winner == Game.DRAW:
+            self.__console.insert(END, "It's A Tie, Here's Coffee!\n")
+            self.__finished = True
+        elif self.__game.winner:
+            self.__console.insert(END, f"Game was won by {self.__game.winner}! Voila, ici est votre cafe!\n")
+            self.__finished = True
 
 class Terminal(Ui):
     def __init__(self):
